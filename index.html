@@ -1,0 +1,2680 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#11100e" />
+    <title>Detetive da História: Vozes Apagadas</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #171410;
+        --paper: #e7d8b8;
+        --paper-light: #f4e9d1;
+        --gold: #d7ad62;
+        --gold-bright: #f1ca7e;
+        --muted: #b6a98d;
+        --line: rgba(232, 205, 151, 0.24);
+        --red: #a44938;
+        --green: #9cbd91;
+        --shadow: 0 24px 80px rgba(0, 0, 0, 0.52);
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-width: 320px;
+        min-height: 100vh;
+        color: #f1eadb;
+        background: #100f0d;
+        background-image: radial-gradient(
+          ellipse at 50% 20%,
+          #28231b 0,
+          #15130f 42%,
+          #0c0b0a 100%
+        );
+      }
+      button,
+      input {
+        font: inherit;
+      }
+      button {
+        color: inherit;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      a:focus-visible {
+        outline: 2px solid var(--gold-bright);
+        outline-offset: 3px;
+      }
+      .app {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .topbar {
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 clamp(16px, 4vw, 56px);
+        border-bottom: 1px solid var(--line);
+        background: rgba(12, 11, 9, 0.78);
+        position: relative;
+        z-index: 3;
+      }
+      .brand {
+        display: flex;
+        gap: 11px;
+        align-items: center;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        font:
+          11px/1.3 Arial,
+          sans-serif;
+        color: var(--muted);
+      }
+      .brand-mark {
+        width: 27px;
+        height: 27px;
+        border: 1px solid var(--gold);
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        color: var(--gold);
+        font-size: 15px;
+      }
+      .top-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .quiet-button,
+      .icon-button {
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--muted);
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: 0.2s ease;
+      }
+      .quiet-button:hover,
+      .icon-button:hover {
+        border-color: var(--gold);
+        color: var(--gold-bright);
+      }
+      .icon-button {
+        min-width: 38px;
+        padding: 8px;
+      }
+      main {
+        flex: 1;
+        display: flex;
+        position: relative;
+        overflow: hidden;
+      }
+      .screen {
+        display: none;
+        width: 100%;
+        min-height: calc(100vh - 64px);
+        animation: fade-in 0.55s ease both;
+      }
+      .screen.active {
+        display: flex;
+      }
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(7px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes fade-out {
+        to {
+          opacity: 0;
+        }
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.55;
+        }
+      }
+      .menu-screen {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 42px 20px;
+        position: relative;
+      }
+      .menu-screen::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0.42;
+        background:
+          radial-gradient(
+            ellipse at 49% 62%,
+            rgba(196, 143, 66, 0.21),
+            transparent 40%
+          ),
+          linear-gradient(
+            90deg,
+            transparent 49.8%,
+            rgba(255, 255, 255, 0.025) 50%,
+            transparent 50.2%
+          );
+        pointer-events: none;
+      }
+      .menu-content {
+        position: relative;
+        max-width: 790px;
+      }
+      .eyebrow {
+        font:
+          11px/1.5 Arial,
+          sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.28em;
+        color: var(--gold);
+      }
+      h1 {
+        font-size: clamp(35px, 6vw, 70px);
+        line-height: 1.04;
+        font-weight: 400;
+        letter-spacing: 0.035em;
+        margin: 23px 0 14px;
+        text-shadow: 0 4px 35px #000;
+      }
+      h1 span {
+        color: var(--gold-bright);
+        font-style: italic;
+      }
+      .subtitle {
+        color: #c9bda4;
+        font-size: 17px;
+        line-height: 1.7;
+        margin: 0 auto 32px;
+        max-width: 560px;
+      }
+      .menu-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .primary,
+      .secondary,
+      .danger {
+        cursor: pointer;
+        border: 1px solid var(--gold);
+        padding: 13px 23px;
+        min-width: 210px;
+        background: linear-gradient(135deg, #b38a4a, #806132);
+        color: #17120c;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font:
+          600 11px Arial,
+          sans-serif;
+        transition:
+          transform 0.2s,
+          filter 0.2s,
+          background 0.2s;
+      }
+      .primary:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.13);
+      }
+      .secondary {
+        background: rgba(20, 18, 14, 0.62);
+        color: var(--paper);
+        border-color: var(--line);
+      }
+      .secondary:hover {
+        border-color: var(--gold);
+        color: var(--gold-bright);
+      }
+      .danger {
+        background: transparent;
+        border-color: #674038;
+        color: #d9aa9a;
+      }
+      .danger:hover {
+        border-color: var(--red);
+      }
+      button:disabled {
+        opacity: 0.42;
+        cursor: not-allowed;
+        transform: none !important;
+        filter: none !important;
+      }
+      .menu-footer {
+        position: absolute;
+        bottom: 22px;
+        color: #807968;
+        font:
+          10px Arial,
+          sans-serif;
+        letter-spacing: 0.13em;
+      }
+      .movie-screen {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 30px;
+        background: #050505;
+        position: relative;
+      }
+      .movie-screen::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(174, 123, 54, 0.17),
+          transparent 58%
+        );
+      }
+      .movie-card {
+        position: relative;
+        max-width: 790px;
+        width: 100%;
+      }
+      .movie-clock {
+        color: var(--gold);
+        font:
+          11px Arial,
+          sans-serif;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+      }
+      .movie-title {
+        margin: 18px 0 34px;
+        font-size: clamp(29px, 5vw, 52px);
+        font-weight: 400;
+      }
+      .movie-text {
+        min-height: 130px;
+        display: grid;
+        place-items: center;
+        font-size: clamp(20px, 3vw, 31px);
+        line-height: 1.55;
+        color: #e5d7bd;
+        white-space: pre-line;
+      }
+      .movie-image {
+        height: 110px;
+        margin: 12px auto 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+      }
+      .archive-paper {
+        width: 74px;
+        height: 94px;
+        background: linear-gradient(135deg, #cfbd99, #8a7757);
+        transform: rotate(-8deg);
+        box-shadow: 0 8px 22px #000;
+        position: relative;
+      }
+      .archive-paper::before {
+        content: "";
+        position: absolute;
+        left: 12px;
+        right: 11px;
+        top: 17px;
+        height: 2px;
+        background: #645640;
+        box-shadow:
+          0 10px #645640,
+          0 20px #645640,
+          0 30px #645640,
+          0 40px #645640;
+        opacity: 0.7;
+      }
+      .archive-photo {
+        width: 58px;
+        height: 77px;
+        border: 4px solid #b39c74;
+        background: linear-gradient(#544b3c 0 45%, #221e19 46%);
+        filter: sepia(0.7);
+      }
+      .lamp {
+        width: 70px;
+        height: 90px;
+        position: relative;
+      }
+      .lamp::before {
+        content: "";
+        position: absolute;
+        left: 15px;
+        top: 0;
+        width: 40px;
+        height: 31px;
+        background: #d3ad69;
+        clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%);
+        box-shadow: 0 0 35px #c38b37;
+      }
+      .lamp::after {
+        content: "";
+        position: absolute;
+        left: 33px;
+        top: 28px;
+        width: 5px;
+        height: 58px;
+        background: #796543;
+        box-shadow: 0 0 50px 20px rgba(202, 144, 61, 0.19);
+      }
+      .movie-controls {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+      }
+      .movie-progress {
+        height: 2px;
+        background: #383126;
+        margin: 28px auto 0;
+        max-width: 520px;
+      }
+      .movie-progress span {
+        height: 100%;
+        display: block;
+        background: var(--gold);
+        transition: width 0.5s;
+      }
+      .scene {
+        position: relative;
+        align-items: stretch;
+        padding: clamp(18px, 4vw, 48px);
+        isolation: isolate;
+      }
+      .scene::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        background:
+          radial-gradient(
+            ellipse at 50% 65%,
+            rgba(172, 121, 52, 0.16),
+            transparent 43%
+          ),
+          linear-gradient(140deg, #171511, #0c0c0b 70%);
+      }
+      .scene::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          repeating-linear-gradient(
+            0deg,
+            transparent 0 3px,
+            rgba(0, 0, 0, 0.06) 4px
+          ),
+          radial-gradient(
+            ellipse at center,
+            transparent 30%,
+            rgba(0, 0, 0, 0.5)
+          );
+      }
+      .scene-layout {
+        width: min(1250px, 100%);
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+      }
+      .section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 20px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 16px;
+      }
+      .section-heading h2 {
+        font-weight: 400;
+        font-size: clamp(27px, 4vw, 42px);
+        margin: 7px 0 0;
+      }
+      .section-heading p {
+        color: var(--muted);
+        margin: 0;
+        line-height: 1.5;
+      }
+      .office-art {
+        min-height: 265px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #4d3d29;
+        background: linear-gradient(
+          180deg,
+          #111313 0%,
+          #1d1913 62%,
+          #21180f 63%,
+          #17120e 100%
+        );
+        box-shadow: var(--shadow);
+      }
+      .office-window {
+        position: absolute;
+        right: 8%;
+        top: 7%;
+        width: 26%;
+        height: 52%;
+        border: 8px solid #382d20;
+        background: linear-gradient(#111a20, #202626);
+        box-shadow: inset 0 0 55px #080c0e;
+      }
+      .office-window::before,
+      .office-window::after {
+        content: "";
+        position: absolute;
+        background: #433422;
+      }
+      .office-window::before {
+        width: 7px;
+        height: 100%;
+        left: 50%;
+      }
+      .office-window::after {
+        height: 7px;
+        width: 100%;
+        top: 50%;
+      }
+      .moon {
+        position: absolute;
+        width: 37px;
+        height: 37px;
+        border-radius: 50%;
+        background: #cbbd91;
+        right: 21%;
+        top: 17%;
+        box-shadow: 0 0 38px rgba(223, 206, 153, 0.22);
+      }
+      .shelf {
+        position: absolute;
+        left: 5%;
+        top: 17%;
+        width: 36%;
+        height: 12%;
+        border-bottom: 7px solid #59422a;
+        background: linear-gradient(90deg, transparent, #282118);
+      }
+      .shelf::before {
+        content: "";
+        position: absolute;
+        left: 8%;
+        bottom: 7px;
+        width: 18px;
+        height: 52px;
+        background: #665237;
+        box-shadow:
+          25px 3px #4e482f,
+          59px 7px #805d36,
+          88px 0 #51432d,
+          116px 5px #72583b,
+          150px 4px #55452e;
+      }
+      .desk {
+        position: absolute;
+        left: 11%;
+        bottom: 16%;
+        width: 72%;
+        height: 20%;
+        background: linear-gradient(#704d2c, #3a2818);
+        transform: skewX(-7deg);
+        box-shadow: 0 18px 22px #070605;
+      }
+      .desk::before {
+        content: "";
+        position: absolute;
+        left: 8%;
+        top: -19px;
+        width: 86%;
+        height: 20px;
+        background: #8b6538;
+        box-shadow: 0 0 38px 13px rgba(213, 164, 85, 0.17);
+      }
+      .desk-leg {
+        position: absolute;
+        left: 20%;
+        bottom: 0;
+        width: 15px;
+        height: 17%;
+        background: #302216;
+        box-shadow: 290px 0 #302216;
+      }
+      .desk-paper {
+        position: absolute;
+        left: 29%;
+        bottom: 24%;
+        width: 18%;
+        height: 14%;
+        background: #cbbc99;
+        transform: rotate(-7deg);
+        box-shadow: 0 3px 8px #090705;
+      }
+      .desk-paper::before {
+        content: "";
+        position: absolute;
+        left: 10%;
+        right: 10%;
+        top: 18%;
+        height: 2px;
+        background: #786c56;
+        box-shadow:
+          0 8px #786c56,
+          0 16px #786c56,
+          0 24px #786c56;
+      }
+      .desk-lamp {
+        position: absolute;
+        left: 59%;
+        bottom: 34%;
+        width: 62px;
+        height: 87px;
+        filter: drop-shadow(0 0 22px rgba(220, 166, 83, 0.25));
+      }
+      .desk-lamp::before {
+        content: "";
+        position: absolute;
+        left: 5px;
+        top: 0;
+        width: 51px;
+        height: 34px;
+        background: #c0924d;
+        clip-path: polygon(19% 0, 81% 0, 100% 100%, 0 100%);
+      }
+      .desk-lamp::after {
+        content: "";
+        position: absolute;
+        left: 28px;
+        top: 32px;
+        width: 5px;
+        height: 46px;
+        background: #8a7049;
+      }
+      .office-hotspot {
+        position: absolute;
+        z-index: 2;
+        border: 1px solid rgba(241, 202, 126, 0.38);
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        background: rgba(17, 15, 12, 0.64);
+        color: var(--gold-bright);
+        cursor: pointer;
+        opacity: 0.72;
+        transition: 0.2s;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+      }
+      .office-hotspot:hover {
+        opacity: 1;
+        transform: scale(1.12);
+        background: rgba(93, 67, 32, 0.88);
+        border-color: var(--gold-bright);
+      }
+      .scene-caption {
+        color: #b6a98d;
+        font-style: italic;
+        line-height: 1.6;
+      }
+      .recovered-photos {
+        display: none;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 16px;
+        border: 1px solid rgba(215, 173, 98, 0.45);
+        background: rgba(215, 173, 98, 0.07);
+      }
+      .recovered-photos.visible {
+        display: flex;
+        animation: fade-in 0.7s ease both;
+      }
+      .recovered-photos-label {
+        width: 100%;
+        font:
+          10px Arial,
+          sans-serif;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+      }
+      .recovered-photo {
+        border: 1px solid var(--line);
+        padding: 10px 13px;
+        background: rgba(0, 0, 0, 0.2);
+        color: var(--paper-light);
+      }
+      .case-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .case-card {
+        position: relative;
+        text-align: left;
+        background: linear-gradient(
+          145deg,
+          rgba(37, 32, 24, 0.94),
+          rgba(17, 16, 14, 0.94)
+        );
+        border: 1px solid var(--line);
+        padding: 19px;
+        min-height: 165px;
+        cursor: pointer;
+        transition: 0.22s;
+      }
+      .case-card:not(:disabled):hover {
+        transform: translateY(-3px);
+        border-color: var(--gold);
+        background: linear-gradient(145deg, #32291d, #181511);
+      }
+      .case-card.locked {
+        opacity: 0.48;
+        cursor: not-allowed;
+      }
+      .case-number {
+        font:
+          10px Arial,
+          sans-serif;
+        letter-spacing: 0.2em;
+        color: var(--gold);
+      }
+      .case-card h3 {
+        font-size: 21px;
+        font-weight: 400;
+        margin: 13px 0 7px;
+      }
+      .case-card p {
+        margin: 0;
+        color: var(--muted);
+        font:
+          12px/1.5 Arial,
+          sans-serif;
+      }
+      .case-status {
+        position: absolute;
+        right: 14px;
+        top: 15px;
+        color: var(--green);
+        font:
+          10px Arial,
+          sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .office-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .case-stage {
+        width: min(1180px, 100%);
+        margin: auto;
+      }
+      .case-scene {
+        position: relative;
+        min-height: 190px;
+        padding: 24px;
+        border: 1px solid #59482f;
+        background:
+          linear-gradient(
+            110deg,
+            rgba(17, 16, 14, 0.95),
+            rgba(28, 24, 17, 0.83)
+          ),
+          radial-gradient(ellipse at 80% 20%, #74572e, transparent 50%);
+        overflow: hidden;
+      }
+      .case-scene::after {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        right: 8%;
+        top: -110px;
+        background: rgba(207, 163, 91, 0.08);
+        box-shadow: 0 0 65px 20px rgba(207, 163, 91, 0.08);
+      }
+      .case-scene h2 {
+        position: relative;
+        z-index: 1;
+        font-size: clamp(27px, 4vw, 40px);
+        font-weight: 400;
+        margin: 0 0 10px;
+      }
+      .case-scene p {
+        position: relative;
+        z-index: 1;
+        color: #c5b99e;
+        max-width: 700px;
+        line-height: 1.7;
+        margin: 0;
+      }
+      .evidence-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .evidence-title h3 {
+        font-weight: 400;
+        font-size: 20px;
+        margin: 0;
+      }
+      .evidence-tools {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .progress-label {
+        font:
+          11px Arial,
+          sans-serif;
+        color: var(--gold);
+        letter-spacing: 0.08em;
+      }
+      .evidence-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 11px;
+      }
+      .evidence-card {
+        min-height: 142px;
+        position: relative;
+        text-align: left;
+        padding: 14px 12px;
+        border: 1px solid var(--line);
+        background: linear-gradient(145deg, #252119, #15130f);
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .evidence-card:hover {
+        border-color: var(--gold);
+        transform: translateY(-2px);
+      }
+      .evidence-card.found {
+        border-color: rgba(156, 189, 145, 0.55);
+        background: linear-gradient(145deg, #263027, #171b15);
+      }
+      .evidence-card h4 {
+        font-size: 15px;
+        font-weight: 400;
+        margin: 17px 0 8px;
+      }
+      .evidence-card small {
+        color: #aaa087;
+        font:
+          10px/1.4 Arial,
+          sans-serif;
+      }
+      .evidence-icon {
+        font-size: 21px;
+        color: var(--gold);
+      }
+      .found-mark {
+        position: absolute;
+        right: 10px;
+        top: 9px;
+        color: var(--green);
+      }
+      .bottom-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .reconstruction {
+        font:
+          10px/1.5 Arial,
+          sans-serif;
+        letter-spacing: 0.06em;
+        color: #a89d83;
+      }
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        z-index: 10;
+        backdrop-filter: blur(4px);
+      }
+      .modal-backdrop.open {
+        display: flex;
+        animation: fade-in 0.2s ease;
+      }
+      .modal {
+        width: min(720px, 100%);
+        max-height: min(88vh, 900px);
+        overflow: auto;
+        background: linear-gradient(145deg, #252118, #15130f);
+        border: 1px solid #80683f;
+        box-shadow: var(--shadow);
+        padding: clamp(20px, 4vw, 34px);
+        position: relative;
+      }
+      .modal-close {
+        position: absolute;
+        right: 15px;
+        top: 13px;
+        background: transparent;
+        border: 0;
+        color: var(--muted);
+        font-size: 23px;
+        cursor: pointer;
+      }
+      .modal h2 {
+        font-size: 28px;
+        font-weight: 400;
+        margin: 7px 36px 8px 0;
+      }
+      .modal .modal-lead {
+        color: #c6b99b;
+        line-height: 1.6;
+        margin: 0 0 20px;
+      }
+      .puzzle-area {
+        border: 1px solid var(--line);
+        background: rgba(0, 0, 0, 0.18);
+        padding: 16px;
+        margin: 16px 0;
+      }
+      .puzzle-area h3 {
+        font-weight: 400;
+        margin: 0 0 13px;
+        font-size: 18px;
+      }
+      .option-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+      .option {
+        background: #28241c;
+        border: 1px solid #66563a;
+        color: var(--paper);
+        padding: 10px 12px;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .option:hover,
+      .option.selected {
+        border-color: var(--gold-bright);
+        background: #40341f;
+        color: #fff4db;
+      }
+      .option.used {
+        border-color: #738b68;
+        background: #263025;
+      }
+      .sequence {
+        min-height: 41px;
+        border: 1px dashed #756341;
+        padding: 9px;
+        margin: 12px 0;
+        color: #d9c99e;
+        font:
+          12px/1.4 Arial,
+          sans-serif;
+      }
+      .puzzle-message {
+        min-height: 24px;
+        margin: 12px 0 0;
+        color: var(--gold-bright);
+        font:
+          12px/1.5 Arial,
+          sans-serif;
+      }
+      .puzzle-message.error {
+        color: #df9d8b;
+      }
+      .hint-box {
+        display: none;
+        margin: 12px 0;
+        padding: 12px;
+        border-left: 2px solid var(--gold);
+        background: rgba(205, 161, 87, 0.09);
+        color: #e2d4b8;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .hint-box.visible {
+        display: block;
+      }
+      .modal-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 17px;
+      }
+      .modal-actions .primary,
+      .modal-actions .secondary {
+        min-width: 0;
+        padding: 11px 15px;
+      }
+      .input-answer {
+        width: 100%;
+        padding: 12px 13px;
+        background: #171511;
+        border: 1px solid #6f5c3c;
+        color: var(--paper-light);
+        margin: 10px 0;
+      }
+      .pair-board {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+      }
+      .pair-col {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .pair-col .option {
+        text-align: left;
+      }
+      .document-sheet {
+        background: linear-gradient(135deg, #eee0be, #c6b48c);
+        color: #272219;
+        padding: 24px;
+        min-height: 170px;
+        box-shadow: inset 0 0 35px rgba(90, 65, 35, 0.18);
+        transition: transform 0.25s;
+      }
+      .document-sheet.zoomed {
+        transform: scale(1.08);
+        transform-origin: center;
+      }
+      .document-sheet .doc-stamp {
+        font:
+          bold 9px Arial,
+          sans-serif;
+        letter-spacing: 0.15em;
+        color: #8b3c2d;
+        border: 1px solid #8b3c2d;
+        padding: 5px 7px;
+        display: inline-block;
+      }
+      .document-sheet h3 {
+        font-size: 22px;
+        font-weight: 400;
+        margin: 15px 0 10px;
+      }
+      .document-sheet p {
+        font-size: 15px;
+        line-height: 1.65;
+        margin: 0;
+        color: #373023;
+      }
+      .board-list {
+        display: grid;
+        gap: 8px;
+        margin: 16px 0;
+      }
+      .board-note {
+        padding: 12px;
+        border-left: 2px solid var(--gold);
+        background: rgba(215, 173, 98, 0.07);
+        font-size: 13px;
+        color: #ded2b8;
+      }
+      .case-story {
+        min-height: 145px;
+        padding: 18px;
+        border-left: 2px solid var(--gold);
+        background: rgba(215, 173, 98, 0.07);
+      }
+      .case-story p {
+        font-size: 15px;
+        line-height: 1.8;
+        color: #ded2b8;
+        margin: 0;
+      }
+      .story-progress {
+        margin-top: 14px;
+        color: var(--gold);
+        font:
+          10px Arial,
+          sans-serif;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .bio-screen,
+      .credits-screen,
+      .ending-screen {
+        align-items: center;
+        justify-content: center;
+        padding: 32px 18px;
+      }
+      .bio-card,
+      .credits-card,
+      .ending-card {
+        width: min(850px, 100%);
+        border: 1px solid var(--line);
+        background: linear-gradient(
+          145deg,
+          rgba(33, 29, 22, 0.96),
+          rgba(17, 16, 14, 0.96)
+        );
+        padding: clamp(23px, 5vw, 48px);
+        box-shadow: var(--shadow);
+      }
+      .bio-card h2,
+      .credits-card h2,
+      .ending-card h2 {
+        font-size: clamp(30px, 5vw, 46px);
+        font-weight: 400;
+        margin: 10px 0;
+      }
+      .bio-card p,
+      .ending-card p {
+        color: #d2c7af;
+        font-size: 16px;
+        line-height: 1.8;
+      }
+      .bio-facts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 18px 0 25px;
+      }
+      .fact-tag {
+        border: 1px solid var(--line);
+        padding: 7px 10px;
+        color: #d7c292;
+        font:
+          10px Arial,
+          sans-serif;
+        letter-spacing: 0.05em;
+      }
+      .sources {
+        border-top: 1px solid var(--line);
+        padding-top: 15px;
+        margin-top: 20px;
+        color: #b9ad92;
+        font:
+          12px/1.8 Arial,
+          sans-serif;
+      }
+      .sources a {
+        color: var(--gold-bright);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+      }
+      .source-list {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .credits-card li {
+        margin: 8px 0;
+        color: #d5c9b2;
+        line-height: 1.5;
+      }
+      .ending-names {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 24px 0;
+      }
+      .ending-name {
+        padding: 13px 16px;
+        border: 1px solid var(--gold);
+        color: var(--gold-bright);
+        background: rgba(215, 173, 98, 0.08);
+      }
+      .toast {
+        position: fixed;
+        bottom: 22px;
+        left: 50%;
+        transform: translate(-50%, 20px);
+        padding: 12px 18px;
+        background: #2c271d;
+        border: 1px solid var(--gold);
+        color: #f0dfbd;
+        z-index: 20;
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.25s;
+        font:
+          12px Arial,
+          sans-serif;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      @media (max-width: 850px) {
+        .evidence-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        .case-grid {
+          grid-template-columns: 1fr;
+        }
+        .case-card {
+          min-height: 130px;
+        }
+      }
+      @media (max-width: 560px) {
+        .topbar {
+          height: 57px;
+          padding: 0 12px;
+        }
+        .brand {
+          font-size: 9px;
+          letter-spacing: 0.08em;
+        }
+        .top-actions .quiet-button {
+          padding: 7px 8px;
+          font-size: 11px;
+        }
+        .screen {
+          min-height: calc(100vh - 57px);
+        }
+        .scene {
+          padding: 17px 12px;
+        }
+        .evidence-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .evidence-card {
+          min-height: 130px;
+        }
+        .office-art {
+          min-height: 210px;
+        }
+        .desk {
+          left: 6%;
+          width: 85%;
+        }
+        .desk-leg {
+          left: 17%;
+        }
+        .desk-lamp {
+          left: 58%;
+        }
+        .pair-board {
+          grid-template-columns: 1fr 1fr;
+        }
+        .menu-footer {
+          font-size: 8px;
+        }
+        .movie-text {
+          min-height: 155px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">⌕</span
+          ><span
+            >Arquivo de investigação<br /><span style="color: #807968"
+              >Rio de Janeiro · 2026</span
+            ></span
+          >
+        </div>
+        <div class="top-actions">
+          <button
+            class="quiet-button"
+            id="sound-toggle"
+            type="button"
+            aria-label="Ativar ou desativar sons"
+          >
+            Som: ligado
+          </button>
+          <button class="quiet-button" id="home-button" type="button">
+            Menu
+          </button>
+        </div>
+      </header>
+      <main>
+        <section
+          class="screen menu-screen active"
+          id="screen-menu"
+          aria-labelledby="main-title"
+        >
+          <div class="menu-content">
+            <div class="eyebrow">Um jogo de investigação histórica</div>
+            <h1 id="main-title">
+              Detetive da História:<br /><span>Vozes Apagadas</span>
+            </h1>
+            <p class="subtitle">
+              Três histórias ficaram à margem dos arquivos. Siga os vestígios,
+              conecte as evidências e devolva seus nomes à memória.
+            </p>
+            <div class="menu-buttons">
+              <button class="primary" id="play-button" type="button">
+                Jogar
+              </button>
+              <button
+                class="secondary"
+                id="continue-button"
+                type="button"
+                hidden
+              >
+                Continuar investigação
+              </button>
+              <button class="secondary" id="credits-button" type="button">
+                Créditos e fontes
+              </button>
+              <button class="danger" id="exit-button" type="button">
+                Sair
+              </button>
+            </div>
+          </div>
+          <div class="menu-footer">
+            UMA INVESTIGAÇÃO SOBRE MEMÓRIA, EDUCAÇÃO E REPRESENTAÇÃO
+          </div>
+        </section>
+
+        <section
+          class="screen movie-screen"
+          id="screen-intro"
+          aria-live="polite"
+        >
+          <div class="movie-card">
+            <div class="movie-clock">Rio de Janeiro · 2026 · 23h47</div>
+            <h2 class="movie-title" id="movie-title">O Arquivo Esquecido</h2>
+            <div class="movie-image" id="movie-image" aria-hidden="true">
+              <div class="lamp"></div>
+              <div class="archive-paper"></div>
+              <div class="archive-photo"></div>
+            </div>
+            <div class="movie-text" id="movie-text"></div>
+            <div class="movie-progress" aria-label="Progresso da introdução">
+              <span id="movie-progress"></span>
+            </div>
+            <div class="movie-controls">
+              <button class="secondary" id="movie-next" type="button">
+                Continuar</button
+              ><button class="quiet-button" id="movie-skip" type="button">
+                Pular introdução
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen scene" id="screen-office">
+          <div class="scene-layout">
+            <div class="section-heading">
+              <div>
+                <div class="eyebrow">Rio de Janeiro · 23h47</div>
+                <h2>O escritório</h2>
+              </div>
+              <p id="office-summary">
+                A encomenda ainda está aberta sobre a mesa.
+              </p>
+            </div>
+            <div
+              class="office-art"
+              role="img"
+              aria-label="Escritório noturno com janela, estante, mesa de madeira, papéis e abajur"
+            >
+              <div class="office-window"><div class="moon"></div></div>
+              <div class="shelf"></div>
+              <div class="desk"></div>
+              <div class="desk-leg"></div>
+              <div class="desk-paper"></div>
+              <div class="desk-lamp"></div>
+              <button
+                class="office-hotspot"
+                style="left: 32%; bottom: 23%"
+                id="paper-hotspot"
+                type="button"
+                aria-label="Examinar a carta sobre a mesa"
+                title="Examinar a carta"
+              >
+                ✉
+              </button>
+              <button
+                class="office-hotspot"
+                style="left: 45%; bottom: 24%"
+                id="photo-hotspot"
+                type="button"
+                aria-label="Examinar as fotografias"
+                title="Examinar as fotografias"
+              >
+                ▣
+              </button>
+              <button
+                class="office-hotspot"
+                style="left: 59%; bottom: 32%"
+                id="lamp-hotspot"
+                type="button"
+                aria-label="Examinar o abajur"
+                title="Examinar o abajur"
+              >
+                ✦
+              </button>
+            </div>
+            <div class="scene-caption" id="office-caption">
+              A luz do abajur revela três fotografias, ainda sem identificação.
+              Uma carta pede que você recupere as histórias por trás delas.
+            </div>
+            <div class="recovered-photos" id="recovered-photos">
+              <span class="recovered-photos-label"
+                >As três fotografias agora têm nome</span
+              ><span class="recovered-photo">Antonieta de Barros</span
+              ><span class="recovered-photo">Lélia Gonzalez</span
+              ><span class="recovered-photo">Marielle Franco</span
+              ><button class="primary" id="recovered-finale" type="button">
+                Ler a mensagem final
+              </button>
+            </div>
+            <div class="case-grid" id="office-cases"></div>
+            <div class="office-actions">
+              <button class="secondary" id="letter-button" type="button">
+                Reler a carta
+              </button>
+              <button class="secondary" id="office-board-button" type="button">
+                Abrir quadro de investigação
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen scene" id="screen-case">
+          <div class="case-stage">
+            <div class="section-heading">
+              <div>
+                <div class="eyebrow" id="case-kicker">Caso 01</div>
+                <h2 id="case-header"></h2>
+              </div>
+              <button class="quiet-button" id="back-office" type="button">
+                ← Escritório
+              </button>
+            </div>
+            <div class="case-scene">
+              <h2 id="case-title"></h2>
+              <p id="case-intro"></p>
+            </div>
+            <div class="evidence-title">
+              <h3>Vestígios no arquivo</h3>
+              <div class="evidence-tools">
+                <span class="progress-label" id="case-progress"></span
+                ><button
+                  class="secondary"
+                  id="clue-history-button"
+                  type="button"
+                >
+                  Ler história e encontrar pistas
+                </button>
+              </div>
+            </div>
+            <div class="evidence-grid" id="evidence-grid"></div>
+            <div class="bottom-row">
+              <span class="reconstruction"
+                >Reconstituições ficcionais criadas para o jogo — não são
+                documentos históricos autênticos.</span
+              >
+              <button class="secondary" id="case-board-button" type="button">
+                Quadro de investigação
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen bio-screen" id="screen-bio">
+          <article class="bio-card" id="bio-content"></article>
+        </section>
+
+        <section class="screen ending-screen" id="screen-ending">
+          <article class="ending-card">
+            <div class="eyebrow">Arquivo reaberto</div>
+            <h2>
+              A investigação termina aqui.<br /><span
+                style="color: var(--gold-bright); font-style: italic"
+                >A história continua.</span
+              >
+            </h2>
+            <div class="ending-names">
+              <span class="ending-name">Antonieta de Barros</span
+              ><span class="ending-name">Lélia Gonzalez</span
+              ><span class="ending-name">Marielle Franco</span>
+            </div>
+            <p>
+              A história não é feita apenas pelos nomes que aparecem nos livros.
+              Ela também pertence àqueles que enfrentaram obstáculos para
+              transformar a sociedade.
+            </p>
+            <p>
+              Três histórias foram recuperadas. Três vozes voltaram a ser
+              ouvidas. Mas a memória só permanece viva quando continuamos a
+              compartilhá-la.
+            </p>
+            <div class="modal-actions">
+              <button class="primary" id="ending-credits" type="button">
+                Ver créditos</button
+              ><button class="secondary" id="ending-office" type="button">
+                Voltar ao escritório
+              </button>
+            </div>
+          </article>
+        </section>
+
+        <section class="screen credits-screen" id="screen-credits">
+          <article class="credits-card">
+            <div class="eyebrow">DETETIVE DA HISTÓRIA · VOZES APAGADAS</div>
+            <h2>Créditos e fontes</h2>
+            <p class="scene-caption">
+              Jogo educativo independente. Os textos de arquivo, cartas, páginas
+              e registros mostrados durante as investigações são reconstruções
+              ficcionais para fins didáticos; não reproduzem documentos
+              autênticos nem falas atribuídas às personagens.
+            </p>
+            <h3>Referências biográficas</h3>
+            <ul>
+              <li>
+                Antonieta de Barros —
+                <a
+                  href="https://memoriapolitica.alesc.sc.gov.br/biografia/68-Antonieta_de_Barros"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Memória Política de Santa Catarina (ALESC)</a
+                >
+                e
+                <a
+                  href="https://www.gov.br/palmares/pt-br/assuntos/noticias/personalidades-negras-2013-antonieta-de-barros"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Fundação Cultural Palmares</a
+                >.
+              </li>
+              <li>
+                Lélia Gonzalez —
+                <a
+                  href="https://www.gov.br/palmares/pt-br/assuntos/noticias/lelia-gonzalez-a-mulher-que-revolucionou-o-movimento-negro"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Fundação Cultural Palmares</a
+                >
+                e
+                <a
+                  href="https://prefeitura.pbh.gov.br/cultura/ric/personalidades-negras/lelia-gonzalez"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Prefeitura de Belo Horizonte</a
+                >.
+              </li>
+              <li>
+                Marielle Franco —
+                <a
+                  href="https://www.camara.rio/vereadores/marielle-franco/participacao-nas-comissoes"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Câmara Municipal do Rio de Janeiro — participação em
+                  comissões</a
+                >
+                e
+                <a
+                  href="https://www.camara.rio/comunicacao/noticias/1849-camara-expoe-fotobiografia-de-marielle-franco-no-saguao-do-palacio-pedro-ernesto"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >fotobiografia da Câmara Municipal</a
+                >.
+              </li>
+            </ul>
+            <p class="reconstruction">
+              Desenvolvido em HTML, CSS e JavaScript. O progresso fica salvo
+              neste navegador.
+            </p>
+            <div class="modal-actions">
+              <button class="secondary" id="credits-back" type="button">
+                Voltar</button
+              ><button class="primary" id="credits-home" type="button">
+                Menu principal
+              </button>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+    <div
+      class="modal-backdrop"
+      id="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <div class="modal">
+        <button
+          class="modal-close"
+          id="modal-close"
+          type="button"
+          aria-label="Fechar"
+        >
+          ×
+        </button>
+        <div id="modal-content"></div>
+      </div>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      "use strict";
+      const STORE_KEY = "detetive-historia-vozes-apagadas-v1";
+      const cases = [
+        {
+          id: "antonieta",
+          number: "01",
+          name: "Antonieta de Barros",
+          years: "1901–1952",
+          title: "A Professora Misteriosa",
+          intro:
+            "Uma caixa reúne notas sobre uma educadora, uma jornalista e uma representante eleita. As datas parecem dispersas; o primeiro passo é dar ordem ao arquivo.",
+          summary:
+            "Educadora, jornalista e política catarinense; primeira mulher negra eleita deputada estadual no Brasil.",
+          facts: [
+            "Professora e jornalista",
+            "Eleita em 1934",
+            "Deputada estadual por Santa Catarina",
+          ],
+          story: [
+            "As primeiras folhas do arquivo falam de uma jovem que escolheu uma escola voltada à formação de professoras. O registro é de 1918; anos depois, ela não esperaria que a educação chegasse até seus alunos: abriria as portas de um curso por conta própria.",
+            "Entre as páginas de ensino, aparece também o rastro de uma jornalista. Um periódico chamado como os dias que compõem uma semana guardou parte de sua escrita. Educação, imprensa e participação pública se cruzam ali, sem que uma única profissão explique toda a trajetória.",
+            "O arquivo mistura cadernos, páginas de jornal e registros de uma assembleia. Cada tipo de documento revela uma face diferente: a sala de aula, a palavra impressa e a atuação política.",
+            "Uma anotação leva a Florianópolis; outra, a uma cadeira numa assembleia estadual. Para descobrir de qual estado se trata, observe a cidade que aparece nos primeiros registros.",
+            "No verso de uma fotografia, a assinatura não parece ser um nome de cartório. Ela combina um nome próprio com uma referência geográfica cercada de água — a mesma assinatura que aparecia em seus textos.",
+          ],
+          bio: "Antonieta de Barros foi professora, jornalista e política. Nascida em Florianópolis, fundou em 1922 o Curso Particular Antonieta de Barros, iniciativa de educação, e dirigiu o jornal A Semana. Em 1934, foi eleita deputada estadual por Santa Catarina, tornando-se a primeira mulher negra eleita para uma assembleia legislativa no Brasil. Sua trajetória aproximou educação, imprensa e participação política em um período em que esses espaços eram profundamente excludentes.",
+          source:
+            '<a href="https://memoriapolitica.alesc.sc.gov.br/biografia/68-Antonieta_de_Barros" target="_blank" rel="noopener noreferrer">Memória Política de Santa Catarina (ALESC)</a>',
+          clues: [
+            {
+              title: "Registro escolar",
+              icon: "✎",
+              type: "order",
+              text: "Um caderno de matrícula reúne datas ligadas a uma trajetória de estudo, ensino e vida pública. Coloque os marcos em ordem cronológica.",
+              doc: "Registro escolar reconstruído: formou-se na Escola Normal Catarinense em 1918; criou seu curso particular em 1922; chegou à Assembleia Legislativa em 1935, após a eleição de 1934.",
+              prompt: "Organize os marcos do mais antigo ao mais recente.",
+              items: [
+                ["eleicao", "Eleita deputada estadual (1934)"],
+                ["curso", "Fundação do curso particular (1922)"],
+                ["normal", "Formação na Escola Normal (1918)"],
+              ],
+              answer: ["normal", "curso", "eleicao"],
+              hints: [
+                "Observe os anos entre parênteses.",
+                "Comece por 1918 e termine em 1934.",
+              ],
+            },
+            {
+              title: "Página de jornal",
+              icon: "▤",
+              type: "phrase",
+              text: "Uma página de jornal foi reconstituída a partir de fragmentos. Reordene os trechos para descrever a atuação registrada, sem atribuir uma citação à personagem.",
+              doc: "Página editorial reconstruída para o jogo: educação, imprensa e participação pública aparecem como eixos da trajetória de Antonieta de Barros. A formulação é descritiva e não é uma frase histórica dela.",
+              prompt: "Monte a sequência que resume os três registros.",
+              items: [
+                ["educacao", "EDUCAÇÃO"],
+                ["imprensa", "IMPRENSA"],
+                ["politica", "E VIDA POLÍTICA"],
+              ],
+              answer: ["educacao", "imprensa", "politica"],
+              hints: [
+                "O texto começa com a área de atuação que abriu a investigação.",
+                "A sequência termina com a participação pública.",
+              ],
+            },
+            {
+              title: "Documentos cruzados",
+              icon: "⌘",
+              type: "match",
+              text: "Três registros foram catalogados sem suas legendas. Associe cada fonte ao campo de atuação correspondente.",
+              doc: "Índice reconstruído: registros escolares documentam o magistério; A Semana, a atuação jornalística; os anais da Assembleia, a atividade parlamentar.",
+              prompt: "Associe cada documento ao seu campo.",
+              left: [
+                ["caderno", "Registro escolar"],
+                ["a-semana", "Jornal A Semana"],
+                ["anais", "Anais da Assembleia"],
+              ],
+              right: [
+                ["politica", "Atuação política"],
+                ["educacao", "Atuação educacional"],
+                ["jornalismo", "Atuação jornalística"],
+              ],
+              pairs: {
+                caderno: "educacao",
+                "a-semana": "jornalismo",
+                anais: "politica",
+              },
+              hints: [
+                "O nome de um jornal é uma pista direta sobre a imprensa.",
+                "Anais legislativos registram atividade parlamentar.",
+              ],
+            },
+            {
+              title: "Registro legislativo",
+              icon: "⌖",
+              type: "decode",
+              text: "O registro indica que a cadeira foi ocupada em uma assembleia estadual. Descubra o estado associado a esta trajetória.",
+              doc: "Ficha legislativa reconstruída: mandato na Assembleia Legislativa de Santa Catarina. A eleição ocorreu em 1934; a legislatura começou em 1935.",
+              prompt: "Digite o nome do estado.",
+              answers: ["Santa Catarina"],
+              hints: [
+                "É o estado cuja capital é Florianópolis.",
+                "Resposta: Santa Catarina.",
+              ],
+            },
+            {
+              title: "Fotografia e identificação",
+              icon: "▣",
+              type: "decode",
+              text: "No verso da fotografia, uma assinatura de imprensa liga a imagem às páginas do jornal. Recupere o pseudônimo usado por Antonieta em seus textos.",
+              doc: "Legenda reconstruída: Antonieta de Barros também publicou sob o pseudônimo Maria da Ilha. Esta ficha é uma reconstituição didática; a fotografia não é apresentada como imagem histórica autêntica.",
+              prompt: "Digite o pseudônimo registrado na legenda.",
+              answers: ["Maria da Ilha"],
+              hints: [
+                "A resposta tem três palavras e inclui o nome de uma ilha.",
+                "Resposta: Maria da Ilha.",
+              ],
+            },
+          ],
+        },
+        {
+          id: "lelia",
+          number: "02",
+          name: "Lélia Gonzalez",
+          years: "1935–1994",
+          title: "As Ideias que Atravessaram o Tempo",
+          intro:
+            "Anotações acadêmicas e registros de mobilização revelam o encontro entre produção intelectual, movimento negro e organização de mulheres negras.",
+          summary:
+            "Intelectual, professora e ativista; referência no pensamento antirracista e no feminismo negro brasileiro.",
+          facts: ["Intelectual e professora", "MNU · 1978", "Nzinga · 1983"],
+          story: [
+            "As notas de estudo não separam as experiências das pessoas em caixas isoladas. Raça, gênero e classe aparecem lado a lado, como partes de uma mesma conversa sobre as desigualdades e a vida no Brasil.",
+            "Entre os papéis há referência a um ensaio publicado em 1984. Seu título aproxima duas formas de discriminação e as observa dentro da cultura brasileira; o texto ajuda a entender por que essas questões não podem ser examinadas separadamente.",
+            "A linha do tempo começa em Belo Horizonte, em 1935. Mais tarde surgem movimentos de organização coletiva: um deles no fim dos anos 1970, outro no início da década seguinte. O último marco do arquivo é 1994.",
+            "Uma anotação de 1978 descreve uma articulação nacional do movimento negro. A ideia de união está no próprio nome da organização, cuja sigla aparece repetida nas margens.",
+            "Em 1983, mulheres negras também se organizaram em um coletivo. O nome escolhido evoca uma liderança africana histórica; procure essa referência para reconhecer a última ficha.",
+          ],
+          bio: "Lélia Gonzalez foi intelectual, professora, antropóloga e ativista brasileira, nascida em Belo Horizonte. Sua produção e atuação política contribuíram para os debates sobre racismo, sexismo, cultura e desigualdades. Participou da fundação do Movimento Negro Unificado (MNU), em 1978, e esteve entre as criadoras do Nzinga — Coletivo de Mulheres Negras, em 1983. Sua obra tornou-se referência para o pensamento social e o feminismo negro no Brasil.",
+          source:
+            '<a href="https://www.gov.br/palmares/pt-br/assuntos/noticias/lelia-gonzalez-a-mulher-que-revolucionou-o-movimento-negro" target="_blank" rel="noopener noreferrer">Fundação Cultural Palmares</a> · <a href="https://prefeitura.pbh.gov.br/cultura/ric/personalidades-negras/lelia-gonzalez" target="_blank" rel="noopener noreferrer">Prefeitura de Belo Horizonte</a>',
+          clues: [
+            {
+              title: "Caderno acadêmico",
+              icon: "✎",
+              type: "match",
+              text: "As anotações aproximam temas que costumam ser estudados separadamente. Relacione cada eixo à questão social correspondente.",
+              doc: "Resumo acadêmico reconstruído: a obra de Lélia Gonzalez analisou relações entre raça, gênero e classe, contribuindo para debates sobre racismo, sexismo e desigualdades.",
+              prompt: "Associe cada eixo ao tema relacionado.",
+              left: [
+                ["raca", "Raça"],
+                ["genero", "Gênero"],
+                ["classe", "Classe"],
+              ],
+              right: [
+                ["racismo", "Racismo"],
+                ["sexismo", "Sexismo"],
+                ["desigualdade", "Desigualdade social"],
+              ],
+              pairs: {
+                raca: "racismo",
+                genero: "sexismo",
+                classe: "desigualdade",
+              },
+              hints: [
+                "O eixo raça se conecta à discussão do racismo.",
+                "Gênero e classe ajudam a compreender sexismo e desigualdades sociais.",
+              ],
+            },
+            {
+              title: "Texto fragmentado",
+              icon: "▤",
+              type: "phrase",
+              text: "Um título de texto foi separado em fragmentos. Reconstrua o título bibliográfico — não se trata de uma fala criada para o jogo.",
+              doc: "Referência reconstituída: “Racismo e sexismo na cultura brasileira” é um ensaio de Lélia Gonzalez publicado em 1984.",
+              prompt: "Reconstrua o título na ordem correta.",
+              items: [
+                ["racismo", "RACISMO"],
+                ["sexismo", "E SEXISMO"],
+                ["cultura", "NA CULTURA"],
+                ["brasileira", "BRASILEIRA"],
+              ],
+              answer: ["racismo", "sexismo", "cultura", "brasileira"],
+              hints: [
+                "Começa com duas questões sociais.",
+                "O último fragmento é “brasileira”.",
+              ],
+            },
+            {
+              title: "Linha do tempo",
+              icon: "◷",
+              type: "order",
+              text: "Quatro fichas biográficas estão fora de ordem. Reorganize-as pelo ano para acompanhar a trajetória.",
+              doc: "Linha do tempo reconstruída: nascimento em 1935; fundação do MNU em 1978; criação do Nzinga em 1983; falecimento em 1994.",
+              prompt: "Organize os marcos do mais antigo ao mais recente.",
+              items: [
+                ["nzinga", "Nzinga — Coletivo de Mulheres Negras (1983)"],
+                ["nascimento", "Nascimento em Belo Horizonte (1935)"],
+                ["falecimento", "Falecimento (1994)"],
+                ["mnu", "Fundação do MNU (1978)"],
+              ],
+              answer: ["nascimento", "mnu", "nzinga", "falecimento"],
+              hints: [
+                "O nascimento vem antes das organizações.",
+                "A ordem dos anos é 1935, 1978, 1983, 1994.",
+              ],
+            },
+            {
+              title: "Movimento negro",
+              icon: "⌘",
+              type: "decode",
+              text: "O documento de mobilização registra uma organização da qual Lélia participou da fundação em 1978. Identifique a sigla.",
+              doc: "Nota histórica reconstruída: Lélia Gonzalez participou da fundação do Movimento Negro Unificado (MNU), em 1978.",
+              prompt: "Digite a sigla da organização.",
+              answers: ["MNU", "Movimento Negro Unificado"],
+              hints: ["São três letras.", "Resposta: MNU."],
+            },
+            {
+              title: "Retrato e coletivo",
+              icon: "▣",
+              type: "decode",
+              text: "A ficha de identificação relaciona a fotografia ao coletivo de mulheres negras criado em 1983. Recupere o nome do coletivo.",
+              doc: "Legenda reconstruída: Nzinga — Coletivo de Mulheres Negras, organização criada em 1983 com participação de Lélia Gonzalez. Não é uma fotografia histórica autêntica.",
+              prompt: "Digite o nome do coletivo.",
+              answers: [
+                "Nzinga",
+                "Nzinga Coletivo de Mulheres Negras",
+                "Nzinga — Coletivo de Mulheres Negras",
+              ],
+              hints: [
+                "O nome tem uma palavra só, iniciada por N.",
+                "Resposta: Nzinga.",
+              ],
+            },
+          ],
+        },
+        {
+          id: "marielle",
+          number: "03",
+          name: "Marielle Franco",
+          years: "1979–2018",
+          title: "A Voz da Cidade",
+          intro:
+            "O mapa e os registros públicos desenham uma trajetória ligada à Maré, à formação acadêmica e à defesa de direitos na Câmara Municipal.",
+          summary:
+            "Socióloga, defensora dos direitos humanos e vereadora do Rio de Janeiro.",
+          facts: [
+            "Complexo da Maré · Rio",
+            "Vereadora eleita em 2016",
+            "Direitos humanos e das mulheres",
+          ],
+          story: [
+            "O mapa não aponta para cartões-postais: acompanha a vida de uma menina criada numa comunidade da zona norte do Rio, formada por várias favelas e conhecida pelo nome de uma maré. Aquele território permaneceu parte de sua história.",
+            "Mais tarde, os registros acadêmicos mostram uma formação em Ciências Sociais numa universidade cujo nome reúne uma cidade e um rio. O mestrado, em Administração Pública, aparece ligado a outra instituição identificada por três letras.",
+            "Nos documentos de sua atuação pública, os assuntos se repetem: mulheres, população negra e moradores de favelas. Não são temas separados; todos se ligam à defesa de direitos e à vida cotidiana nos territórios.",
+            "A cronologia começa com uma eleição municipal em 2016, segue para o início do mandato no ano seguinte e termina em 2018, quando a violência interrompeu a trajetória de Marielle e Anderson Gomes. O arquivo registra o contexto sem transformar essa violência em enigma.",
+            "Uma ficha da Câmara destaca a comissão que ela presidiu. Seu nome indica a quem aquele espaço institucional buscava dar atenção e proteção.",
+          ],
+          bio: "Marielle Franco foi socióloga, defensora dos direitos humanos e vereadora do Rio de Janeiro. Nascida na cidade, foi criada no Complexo da Maré. Formou-se em Ciências Sociais pela PUC-Rio e concluiu mestrado em Administração Pública na Universidade Federal Fluminense. Eleita em 2016, tomou posse em 2017 e presidiu a Comissão de Defesa da Mulher da Câmara Municipal. Sua atuação abordou direitos das mulheres, população negra e moradores de favelas. Marielle foi assassinada em 14 de março de 2018, junto com o motorista Anderson Gomes. Este jogo trata essa violência como contexto histórico, nunca como enigma ou desafio.",
+          source:
+            '<a href="https://www.camara.rio/vereadores/marielle-franco/participacao-nas-comissoes" target="_blank" rel="noopener noreferrer">Câmara Municipal do Rio de Janeiro — comissões</a> · <a href="https://www.camara.rio/comunicacao/noticias/1849-camara-expoe-fotobiografia-de-marielle-franco-no-saguao-do-palacio-pedro-ernesto" target="_blank" rel="noopener noreferrer">fotobiografia da Câmara Municipal</a>',
+          clues: [
+            {
+              title: "Mapa da cidade",
+              icon: "⌖",
+              type: "locate",
+              text: "O mapa destaca os lugares que aparecem na biografia. Localize o território onde Marielle cresceu.",
+              doc: "Mapa esquemático reconstruído. Marielle Franco nasceu e foi criada no Complexo da Maré, na cidade do Rio de Janeiro. Os pontos não representam endereços precisos.",
+              prompt: "Selecione o território indicado no mapa.",
+              items: [
+                ["centro", "Centro"],
+                ["mare", "Complexo da Maré"],
+                ["zona-sul", "Zona Sul"],
+                ["tijuca", "Tijuca"],
+              ],
+              answer: "mare",
+              hints: [
+                "É um conjunto de favelas na zona norte do Rio.",
+                "Procure “Complexo da Maré”.",
+              ],
+            },
+            {
+              title: "Percurso acadêmico",
+              icon: "✎",
+              type: "match",
+              text: "Dois registros acadêmicos foram misturados. Conecte cada instituição à formação correspondente.",
+              doc: "Ficha acadêmica reconstruída: graduação em Ciências Sociais pela PUC-Rio e mestrado em Administração Pública pela Universidade Federal Fluminense (UFF).",
+              prompt: "Associe instituição e formação.",
+              left: [
+                ["puc", "PUC-Rio"],
+                ["uff", "UFF"],
+              ],
+              right: [
+                ["ciencias", "Ciências Sociais — graduação"],
+                ["administracao", "Administração Pública — mestrado"],
+              ],
+              pairs: { puc: "ciencias", uff: "administracao" },
+              hints: [
+                "A graduação em Ciências Sociais foi na PUC-Rio.",
+                "O mestrado em Administração Pública foi na UFF.",
+              ],
+            },
+            {
+              title: "Registros da Câmara",
+              icon: "⌘",
+              type: "match",
+              text: "Os registros do mandato mostram frentes de atuação. Relacione cada tema à área de direitos correspondente.",
+              doc: "Síntese de atuação reconstruída a partir de registros públicos: direitos das mulheres, população negra e moradores de favelas aparecem entre os temas de sua atividade política.",
+              prompt: "Conecte os temas às áreas de atuação.",
+              left: [
+                ["mulheres", "Direitos das mulheres"],
+                ["negra", "População negra"],
+                ["favelas", "Moradores de favelas"],
+              ],
+              right: [
+                ["igualdade", "Igualdade de gênero"],
+                ["antirracismo", "Enfrentamento ao racismo"],
+                ["territorio", "Direitos e serviços nos territórios"],
+              ],
+              pairs: {
+                mulheres: "igualdade",
+                negra: "antirracismo",
+                favelas: "territorio",
+              },
+              hints: [
+                "A população negra se conecta ao enfrentamento ao racismo.",
+                "Os temas territoriais incluem os direitos de moradores de favelas.",
+              ],
+            },
+            {
+              title: "Linha do mandato",
+              icon: "◷",
+              type: "order",
+              text: "Organize os registros do mandato. O último marco reconhece uma violência histórica; não é necessário reconstruir suas circunstâncias.",
+              doc: "Cronologia pública reconstruída: eleita vereadora em 2016; iniciou o mandato em 2017; foi assassinada em 14 de março de 2018, junto com Anderson Gomes. O assassinato não é tratado como desafio de jogo.",
+              prompt: "Coloque os marcos públicos em ordem cronológica.",
+              items: [
+                ["posse", "Início do mandato (2017)"],
+                [
+                  "assassinato",
+                  "Assassinato de Marielle e Anderson Gomes (2018)",
+                ],
+                ["eleicao", "Eleita vereadora (2016)"],
+              ],
+              answer: ["eleicao", "posse", "assassinato"],
+              hints: [
+                "A eleição ocorreu antes do início do mandato.",
+                "A sequência é 2016, 2017, 2018.",
+              ],
+            },
+            {
+              title: "Fotografia e mandato",
+              icon: "▣",
+              type: "decode",
+              text: "O catálogo legislativo identifica a comissão que Marielle presidiu na Câmara Municipal. Recupere o nome da comissão.",
+              doc: "Registro institucional reconstruído: Marielle presidiu a Comissão de Defesa da Mulher da Câmara Municipal do Rio de Janeiro. A ficha e a imagem são elementos didáticos, não um documento ou fotografia autênticos.",
+              prompt: "Digite o nome da comissão.",
+              answers: ["Comissão de Defesa da Mulher", "Defesa da Mulher"],
+              hints: [
+                "A comissão se dedicava aos direitos das mulheres.",
+                "Resposta: Comissão de Defesa da Mulher.",
+              ],
+            },
+          ],
+        },
+      ];
+
+      const defaultState = () => ({
+        started: false,
+        introSeen: false,
+        completed: [false, false, false],
+        clues: [[], [], []],
+        hints: {},
+        lastCase: 0,
+        sound: true,
+      });
+      let state = loadState();
+      let currentScreen = "menu",
+        currentCaseIndex = 0,
+        previousScreen = "menu",
+        activePuzzle = null,
+        cutsceneTimer = null,
+        introTypingTimer = null,
+        toastTimer = null,
+        audioContext = null;
+      const $ = (selector, root = document) => root.querySelector(selector);
+      const escapeHTML = (value) =>
+        String(value).replace(
+          /[&<>"']/g,
+          (char) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[char],
+        );
+      function loadState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORE_KEY));
+          if (!saved) return defaultState();
+          const base = defaultState();
+          return {
+            ...base,
+            ...saved,
+            completed: Array.isArray(saved.completed)
+              ? [0, 1, 2].map((i) => !!saved.completed[i])
+              : base.completed,
+            clues: Array.isArray(saved.clues)
+              ? [0, 1, 2].map((i) =>
+                  Array.isArray(saved.clues[i])
+                    ? saved.clues[i].filter(
+                        (n) => Number.isInteger(n) && n >= 0 && n < 5,
+                      )
+                    : [],
+                )
+              : base.clues,
+            hints:
+              saved.hints && typeof saved.hints === "object" ? saved.hints : {},
+          };
+        } catch (error) {
+          console.warn("Não foi possível ler o progresso salvo.", error);
+          return defaultState();
+        }
+      }
+      function save() {
+        try {
+          localStorage.setItem(STORE_KEY, JSON.stringify(state));
+        } catch (error) {
+          console.warn("Não foi possível salvar o progresso.", error);
+          showToast("Não foi possível salvar neste navegador.");
+        }
+        updateMenu();
+      }
+      function showScreen(name) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) =>
+            s.classList.toggle("active", s.id === "screen-" + name),
+          );
+        currentScreen = name;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      function showToast(message) {
+        const el = $("#toast");
+        el.textContent = message;
+        el.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
+      }
+      function updateMenu() {
+        $("#continue-button").hidden = !state.started;
+      }
+      function playTone(
+        frequency = 440,
+        duration = 0.06,
+        type = "sine",
+        volume = 0.025,
+      ) {
+        if (!state.sound) return;
+        try {
+          audioContext =
+            audioContext ||
+            new (window.AudioContext || window.webkitAudioContext)();
+          const osc = audioContext.createOscillator(),
+            gain = audioContext.createGain();
+          osc.type = type;
+          osc.frequency.value = frequency;
+          gain.gain.setValueAtTime(volume, audioContext.currentTime);
+          gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioContext.currentTime + duration,
+          );
+          osc.connect(gain);
+          gain.connect(audioContext.destination);
+          osc.start();
+          osc.stop(audioContext.currentTime + duration);
+        } catch (error) {
+          console.warn("Áudio indisponível neste navegador.", error);
+        }
+      }
+      function setSound() {
+        state.sound = !state.sound;
+        save();
+        $("#sound-toggle").textContent =
+          "Som: " + (state.sound ? "ligado" : "desligado");
+        if (state.sound) playTone(540, 0.08);
+      }
+      function goHome() {
+        clearTimeout(cutsceneTimer);
+        closeModal();
+        showScreen("menu");
+        updateMenu();
+      }
+
+      const introFrames = [
+        {
+          text: "Durante décadas, milhares de documentos permaneceram esquecidos nos arquivos da história brasileira.",
+          art: "paper",
+          delay: 8500,
+        },
+        {
+          text: "Entre eles, estavam registros de mulheres que desafiaram as regras de sua época, enfrentaram o preconceito e conquistaram espaços que antes lhes eram negados.",
+          art: "paper",
+          delay: 9500,
+        },
+        {
+          text: "Mulheres que lutaram para que suas vozes fossem ouvidas. Mas nem todas receberam o reconhecimento que mereciam.",
+          art: "photos",
+          delay: 8500,
+        },
+        { text: "Alguém bate à porta.", art: "door", delay: 6500 },
+        {
+          text: "Uma encomenda misteriosa. Três fotografias sem identificação e uma carta.",
+          art: "box",
+          delay: 8000,
+        },
+        {
+          text: "“A história não desaparece apenas quando seus documentos são destruídos. Ela também pode ser esquecida quando deixamos de contar quem a construiu.\n\nTrês mulheres. Três histórias. Três vozes que precisam ser lembradas. Sua missão é descobrir quem foram, o que fizeram e por que seus nomes devem permanecer na memória do Brasil.”",
+          art: "letter",
+          delay: 11500,
+        },
+        {
+          text: "O tempo pode apagar as palavras de um papel, mas não precisa apagar uma história.\n\nNem todo mistério envolve um crime. Alguns envolvem o esquecimento.",
+          art: "quote",
+          delay: 9500,
+        },
+        {
+          text: "MISSÃO: RECUPERE AS TRÊS VOZES DA HISTÓRIA.",
+          art: "title",
+          delay: 7000,
+        },
+      ];
+      let introIndex = 0,
+        introStart = 0;
+      function startIntro() {
+        state.started = true;
+        state.introSeen = false;
+        save();
+        introIndex = 0;
+        showScreen("intro");
+        renderIntro();
+        playTone(220, 0.45, "triangle", 0.04);
+      }
+      function renderIntro() {
+        clearTimeout(cutsceneTimer);
+        clearInterval(introTypingTimer);
+        const frame = introFrames[introIndex];
+        if (!frame) {
+          finishIntro();
+          return;
+        }
+        const text = $("#movie-text");
+        $("#movie-title").innerHTML =
+          frame.art === "title"
+            ? "DETETIVE DA HISTÓRIA:<br><span>VOZES APAGADAS</span>"
+            : "O Arquivo Esquecido";
+        $("#movie-progress").style.width =
+          ((introIndex + 1) / introFrames.length) * 100 + "%";
+        $("#movie-next").textContent =
+          introIndex === introFrames.length - 1
+            ? "Abrir a investigação"
+            : "Continuar";
+        $("#movie-image").style.opacity =
+          frame.art === "title" || frame.art === "quote" ? "0" : "1";
+        text.textContent = "";
+        let i = 0;
+        const words = frame.text.split("");
+        introTypingTimer = setInterval(() => {
+          text.textContent += words[i] || "";
+          if (words[i] && /[.,!?]/.test(words[i]))
+            playTone(900, 0.012, "square", 0.008);
+          i++;
+          if (i >= words.length) clearInterval(introTypingTimer);
+        }, 23);
+        introStart = Date.now();
+        if (frame.art === "door")
+          setTimeout(() => {
+            playTone(110, 0.25, "triangle", 0.05);
+            setTimeout(() => playTone(110, 0.25, "triangle", 0.05), 480);
+          }, 850);
+        cutsceneTimer = setTimeout(() => advanceIntro(), frame.delay);
+      }
+      function advanceIntro() {
+        if (introIndex < introFrames.length - 1) {
+          introIndex++;
+          renderIntro();
+        } else finishIntro();
+      }
+      function finishIntro() {
+        clearTimeout(cutsceneTimer);
+        clearInterval(introTypingTimer);
+        state.introSeen = true;
+        save();
+        showScreen("office");
+        renderOffice();
+        playTone(520, 0.18, "sine", 0.025);
+      }
+
+      function renderOffice() {
+        const completed = state.completed.filter(Boolean).length;
+        $("#office-summary").textContent =
+          completed === 3
+            ? "As três fotografias agora têm nome. O arquivo está completo."
+            : completed
+              ? `${completed} de 3 histórias recuperadas. O próximo arquivo aguarda sua investigação.`
+              : "A encomenda ainda está aberta sobre a mesa.";
+        $("#office-caption").textContent =
+          completed === 3
+            ? "As três fotografias, agora identificadas, permanecem sobre a mesa. As histórias recuperadas pertencem à memória coletiva."
+            : completed
+              ? `${completed} de 3 fotografias já foram identificadas. Uma carta pede que você recupere as histórias por trás delas.`
+              : "A luz do abajur revela três fotografias, ainda sem identificação. Uma carta pede que você recupere as histórias por trás delas.";
+        $("#recovered-photos").classList.toggle("visible", completed === 3);
+        const container = $("#office-cases");
+        container.innerHTML = cases
+          .map((c, i) => {
+            const unlocked = i === 0 || state.completed[i - 1];
+            const done = state.completed[i];
+            return `<button class="case-card ${unlocked ? "" : "locked"}" type="button" ${unlocked ? "" : "disabled"} data-case="${i}" aria-label="${unlocked ? "Investigar" : "Caso bloqueado"}: ${escapeHTML(c.title)}"><span class="case-number">CASO ${c.number} · ${c.years}</span><span class="case-status">${done ? "Concluído" : unlocked ? "Disponível" : "Bloqueado"}</span><h3>${escapeHTML(c.title)}</h3><p>${escapeHTML(c.summary)}</p></button>`;
+          })
+          .join("");
+        container
+          .querySelectorAll("[data-case]")
+          .forEach((button) =>
+            button.addEventListener("click", () =>
+              openCase(Number(button.dataset.case)),
+            ),
+          );
+        $("#office-board-button").disabled = completed === 0;
+        $("#office-board-button").title =
+          completed === 0
+            ? "Encontre uma pista para abrir o quadro"
+            : "Reveja as evidências coletadas";
+      }
+      function openCase(index) {
+        if (index > 0 && !state.completed[index - 1]) {
+          showToast("Conclua o caso anterior para liberar este arquivo.");
+          return;
+        }
+        currentCaseIndex = index;
+        state.lastCase = index;
+        save();
+        renderCase();
+        showScreen("case");
+      }
+      function renderCase() {
+        const c = cases[currentCaseIndex],
+          found = state.clues[currentCaseIndex];
+        $("#case-kicker").textContent = `CASO ${c.number} · ${c.years}`;
+        $("#case-header").textContent = c.title;
+        $("#case-title").textContent = c.title;
+        $("#case-intro").textContent = c.intro;
+        $("#case-progress").textContent =
+          `${found.length} / 5 pistas principais`;
+        $("#evidence-grid").innerHTML = c.clues
+          .map((clue, i) => {
+            const collected = found.includes(i);
+            return `<button class="evidence-card ${collected ? "found" : ""}" type="button" data-clue="${i}" aria-label="${collected ? "Abrir documento" : "Investigar"}: ${escapeHTML(clue.title)}"><span class="evidence-icon">${clue.icon}</span>${collected ? '<span class="found-mark" aria-hidden="true">✓</span>' : ""}<h4>${escapeHTML(clue.title)}</h4><small>${collected ? "Documento recuperado" : "Clique para examinar"}</small></button>`;
+          })
+          .join("");
+        $("#evidence-grid")
+          .querySelectorAll("[data-clue]")
+          .forEach((button) =>
+            button.addEventListener("click", () =>
+              inspectClue(Number(button.dataset.clue)),
+            ),
+          );
+        $("#case-board-button").disabled = found.length === 0;
+        $("#case-board-button").title =
+          found.length === 0
+            ? "Encontre uma pista para abrir o quadro"
+            : "Cruze as evidências reunidas";
+      }
+      function showClueHistory() {
+        renderCaseStory(currentCaseIndex, 0);
+      }
+      function renderCaseStory(caseIndex, passageIndex) {
+        const c = cases[caseIndex],
+          lastPassage = c.story.length - 1,
+          atEnd = passageIndex === lastPassage;
+        openModal(
+          `${modalHeader(`HISTÓRIA · TRECHO ${passageIndex + 1} DE ${c.story.length}`, c.name, "Leia com atenção: os detalhes da trajetória ajudam a interpretar os vestígios, sem revelar as respostas diretamente.")}<div class="case-story" aria-live="polite"><p>${escapeHTML(c.story[passageIndex])}</p><div class="story-progress">Trecho ${passageIndex + 1} de ${c.story.length}</div></div><div class="modal-actions"><button class="${atEnd ? "primary" : "secondary"}" id="story-next" type="button">${atEnd ? "Voltar às pistas" : "Continuar história"}</button></div>`,
+        );
+        $("#story-next").onclick = () =>
+          atEnd ? closeModal() : renderCaseStory(caseIndex, passageIndex + 1);
+        $("#modal-close").onclick = closeModal;
+      }
+      function inspectClue(index) {
+        const c = cases[currentCaseIndex],
+          clue = c.clues[index];
+        if (state.clues[currentCaseIndex].includes(index)) {
+          showDocument(index);
+          return;
+        }
+        activePuzzle = {
+          caseIndex: currentCaseIndex,
+          clueIndex: index,
+          sequence: [],
+          pairs: {},
+          selectedLeft: null,
+          selected: null,
+        };
+        renderPuzzle();
+      }
+
+      function openModal(html) {
+        $("#modal-content").innerHTML = html;
+        $("#modal-backdrop").classList.add("open");
+        $("#modal-close").focus();
+      }
+      function closeModal() {
+        activePuzzle = null;
+        $("#modal-backdrop").classList.remove("open");
+      }
+      function modalHeader(kicker, title, lead) {
+        return `<div class="eyebrow">${escapeHTML(kicker)}</div><h2 id="modal-title">${escapeHTML(title)}</h2><p class="modal-lead">${escapeHTML(lead)}</p>`;
+      }
+      function renderPuzzle(message = "", isError = false) {
+        if (!activePuzzle) return;
+        const { caseIndex, clueIndex } = activePuzzle,
+          c = cases[caseIndex],
+          clue = c.clues[clueIndex];
+        let area = "";
+        if (clue.type === "order" || clue.type === "phrase") {
+          area = `<div class="puzzle-area"><h3>${escapeHTML(clue.prompt)}</h3><div class="option-list">${clue.items.map(([id, label]) => `<button class="option" type="button" data-item="${id}" ${activePuzzle.sequence.includes(id) ? "disabled" : ""}>${escapeHTML(label)}</button>`).join("")}</div><div class="sequence" aria-live="polite">${activePuzzle.sequence.length ? activePuzzle.sequence.map((id) => escapeHTML(clue.items.find((item) => item[0] === id)[1])).join(" → ") : "Sua sequência aparecerá aqui."}</div></div>`;
+        } else if (clue.type === "match") {
+          area = `<div class="puzzle-area"><h3>${escapeHTML(clue.prompt)}</h3><div class="pair-board"><div class="pair-col">${clue.left.map(([id, label]) => `<button class="option ${activePuzzle.selectedLeft === id ? "selected" : ""} ${activePuzzle.pairs[id] ? "used" : ""}" type="button" data-left="${id}" ${activePuzzle.pairs[id] ? "disabled" : ""}>${escapeHTML(label)}</button>`).join("")}</div><div class="pair-col">${clue.right.map(([id, label]) => `<button class="option ${activePuzzle.selected === id ? "selected" : ""} ${Object.values(activePuzzle.pairs).includes(id) ? "used" : ""}" type="button" data-right="${id}" ${Object.values(activePuzzle.pairs).includes(id) ? "disabled" : ""}>${escapeHTML(label)}</button>`).join("")}</div></div><div class="sequence">${
+            Object.entries(activePuzzle.pairs)
+              .map(
+                ([l, r]) =>
+                  `${escapeHTML(clue.left.find((x) => x[0] === l)[1])} ↔ ${escapeHTML(clue.right.find((x) => x[0] === r)[1])}`,
+              )
+              .join("<br>") || "Selecione um item de cada coluna."
+          }</div></div>`;
+        } else if (clue.type === "locate") {
+          area = `<div class="puzzle-area"><h3>${escapeHTML(clue.prompt)}</h3><div class="option-list">${clue.items.map(([id, label]) => `<button class="option" type="button" data-locate="${id}">${escapeHTML(label)}</button>`).join("")}</div></div>`;
+        } else {
+          area = `<div class="puzzle-area"><h3>${escapeHTML(clue.prompt)}</h3><input class="input-answer" id="puzzle-answer" type="text" autocomplete="off" placeholder="Escreva sua resposta"><button class="secondary" id="answer-submit" type="button">Conferir registro</button></div>`;
+        }
+        const hintsUsed = state.hints[`${caseIndex}-${clueIndex}`] || 0;
+        const nextHint = clue.hints[Math.min(hintsUsed, clue.hints.length - 1)];
+        openModal(
+          `${modalHeader(`Pista ${String(clueIndex + 1).padStart(2, "0")} de 05`, clue.title, clue.text)}${area}<div class="puzzle-message ${isError ? "error" : ""}" id="puzzle-message" aria-live="polite">${escapeHTML(message)}</div><div class="hint-box ${hintsUsed ? "visible" : ""}" id="hint-box">${hintsUsed ? escapeHTML(clue.hints[Math.min(hintsUsed - 1, clue.hints.length - 1)]) : ""}</div><div class="modal-actions">${clue.type === "order" || clue.type === "phrase" ? '<button class="primary" id="sequence-submit" type="button">Confirmar sequência</button><button class="secondary" id="sequence-clear" type="button">Recomeçar</button>' : clue.type === "match" ? '<button class="primary" id="match-submit" type="button">Confirmar conexões</button><button class="secondary" id="match-clear" type="button">Recomeçar</button>' : ""}<button class="secondary" id="hint-button" type="button">Pedir dica ${hintsUsed ? `(${hintsUsed}/${clue.hints.length})` : ""}</button></div>`,
+        );
+        $("#modal-close").onclick = closeModal;
+        $("#hint-button").onclick = () => giveHint(caseIndex, clueIndex);
+        if (clue.type === "order" || clue.type === "phrase") {
+          document.querySelectorAll("[data-item]").forEach((btn) =>
+            btn.addEventListener("click", () => {
+              activePuzzle.sequence.push(btn.dataset.item);
+              playTone(660, 0.035, "square", 0.014);
+              renderPuzzle();
+            }),
+          );
+          $("#sequence-clear").onclick = () => {
+            activePuzzle.sequence = [];
+            renderPuzzle();
+          };
+          $("#sequence-submit").onclick = () => {
+            if (activePuzzle.sequence.length !== clue.answer.length) {
+              renderPuzzle(
+                "Examine todos os fragmentos antes de confirmar.",
+                true,
+              );
+              return;
+            }
+            if (
+              activePuzzle.sequence.every(
+                (value, i) => value === clue.answer[i],
+              )
+            )
+              solveClue();
+            else {
+              playTone(180, 0.16, "triangle");
+              renderPuzzle(
+                "A sequência não corresponde aos registros. Tente novamente ou peça uma dica.",
+                true,
+              );
+            }
+          };
+        }
+        if (clue.type === "match") {
+          document.querySelectorAll("[data-left]").forEach((btn) =>
+            btn.addEventListener("click", () => {
+              activePuzzle.selectedLeft = btn.dataset.left;
+              if (activePuzzle.selected && activePuzzle.selectedLeft) {
+                activePuzzle.pairs[activePuzzle.selectedLeft] =
+                  activePuzzle.selected;
+                activePuzzle.selectedLeft = null;
+                activePuzzle.selected = null;
+              }
+              renderPuzzle();
+            }),
+          );
+          document.querySelectorAll("[data-right]").forEach((btn) =>
+            btn.addEventListener("click", () => {
+              activePuzzle.selected = btn.dataset.right;
+              if (activePuzzle.selectedLeft) {
+                activePuzzle.pairs[activePuzzle.selectedLeft] =
+                  activePuzzle.selected;
+                activePuzzle.selectedLeft = null;
+                activePuzzle.selected = null;
+              }
+              renderPuzzle();
+            }),
+          );
+          $("#match-clear").onclick = () => {
+            activePuzzle.pairs = {};
+            activePuzzle.selectedLeft = null;
+            activePuzzle.selected = null;
+            renderPuzzle();
+          };
+          $("#match-submit").onclick = () => {
+            if (Object.keys(activePuzzle.pairs).length !== clue.left.length) {
+              renderPuzzle(
+                "Conecte todos os documentos antes de confirmar.",
+                true,
+              );
+              return;
+            }
+            const correct = Object.entries(clue.pairs).every(
+              ([left, right]) => activePuzzle.pairs[left] === right,
+            );
+            if (correct) solveClue();
+            else {
+              playTone(180, 0.16, "triangle");
+              renderPuzzle(
+                "Uma ou mais conexões não conferem. Revise as fontes e tente outra vez.",
+                true,
+              );
+            }
+          };
+        }
+        if (clue.type === "locate")
+          document.querySelectorAll("[data-locate]").forEach((btn) =>
+            btn.addEventListener("click", () => {
+              if (btn.dataset.locate === clue.answer) solveClue();
+              else {
+                playTone(180, 0.16, "triangle");
+                renderPuzzle(
+                  "Este lugar não corresponde ao registro. Explore o mapa outra vez.",
+                  true,
+                );
+              }
+            }),
+          );
+        if (clue.type === "decode") {
+          $("#answer-submit").onclick = checkTextAnswer;
+          $("#puzzle-answer").addEventListener("keydown", (event) => {
+            if (event.key === "Enter") checkTextAnswer();
+          });
+          $("#puzzle-answer").focus();
+        }
+      }
+      function normalize(value) {
+        return value
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLocaleLowerCase("pt-BR")
+          .replace(/[—–-]/g, " ")
+          .replace(/[.,!?]/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+      function checkTextAnswer() {
+        const p = activePuzzle,
+          c = cases[p.caseIndex].clues[p.clueIndex],
+          answer = normalize($("#puzzle-answer").value);
+        if (c.answers.some((value) => normalize(value) === answer)) solveClue();
+        else {
+          playTone(180, 0.16, "triangle");
+          renderPuzzle(
+            "Esse registro não confere. Revise as pistas ou peça uma dica.",
+            true,
+          );
+        }
+      }
+      function solveClue() {
+        const p = activePuzzle;
+        if (!state.clues[p.caseIndex].includes(p.clueIndex))
+          state.clues[p.caseIndex].push(p.clueIndex);
+        state.clues[p.caseIndex].sort((a, b) => a - b);
+        save();
+        playTone(740, 0.12, "sine");
+        playTone(930, 0.19, "sine");
+        closeModal();
+        renderCase();
+        showDocument(p.clueIndex, true);
+      }
+      function giveHint(caseIndex, clueIndex) {
+        const clue = cases[caseIndex].clues[clueIndex],
+          key = `${caseIndex}-${clueIndex}`,
+          used = state.hints[key] || 0;
+        if (used >= clue.hints.length) {
+          $("#hint-box").textContent = clue.hints[clue.hints.length - 1];
+          $("#hint-box").classList.add("visible");
+          showToast("Essa é a última dica para esta pista.");
+          return;
+        }
+        state.hints[key] = used + 1;
+        save();
+        $("#hint-box").textContent = clue.hints[used];
+        $("#hint-box").classList.add("visible");
+        $("#hint-button").textContent =
+          used + 1 < clue.hints.length
+            ? `Pedir próxima dica (${used + 1}/${clue.hints.length})`
+            : "Última dica exibida";
+        playTone(380, 0.08);
+      }
+      function showDocument(index, justFound = false) {
+        const clue = cases[currentCaseIndex].clues[index];
+        openModal(
+          `${modalHeader(justFound ? "PISTA RECUPERADA" : "DOCUMENTO DO ARQUIVO", clue.title, justFound ? "A evidência foi acrescentada ao quadro de investigação." : "Documento já registrado no seu inventário.")}<div class="document-sheet" id="document-sheet"><span class="doc-stamp">RECONSTRUÇÃO PARA O JOGO</span><h3>${escapeHTML(clue.title)}</h3><p>${escapeHTML(clue.doc)}</p></div><div class="modal-actions"><button class="secondary" id="zoom-document" type="button">Ampliar documento</button><button class="primary" id="document-done" type="button">Voltar à investigação</button></div>`,
+        );
+        $("#zoom-document").onclick = () => {
+          $("#document-sheet").classList.toggle("zoomed");
+          $("#zoom-document").textContent = $(
+            "#document-sheet",
+          ).classList.contains("zoomed")
+            ? "Reduzir documento"
+            : "Ampliar documento";
+        };
+        $("#document-done").onclick = closeModal;
+        $("#modal-close").onclick = closeModal;
+      }
+
+      function openBoard(fromOffice = false) {
+        const caseIndex = fromOffice ? state.lastCase : currentCaseIndex,
+          c = cases[caseIndex],
+          found = state.clues[caseIndex] || [];
+        const entries = found
+          .map(
+            (i) =>
+              `<div class="board-note"><strong>${escapeHTML(c.clues[i].title)}</strong><br>${escapeHTML(c.clues[i].doc)}</div>`,
+          )
+          .join("");
+        const canIdentify = found.length === 5;
+        openModal(
+          `${modalHeader("QUADRO DE INVESTIGAÇÃO", c.name, canIdentify ? "As cinco pistas estão reunidas. Cruze os vestígios e registre a identidade." : "As evidências coletadas ficam conectadas aqui. Continue examinando os vestígios para completar o caso.")}<div class="board-list">${entries || '<div class="board-note">Ainda não há evidências neste caso. Investigue um arquivo para começar.</div>'}</div><div class="modal-actions"><button class="primary" id="identify-button" ${canIdentify ? "" : "disabled"} type="button">Cruzar evidências</button><button class="secondary" id="board-close" type="button">Fechar quadro</button></div>`,
+        );
+        $("#board-close").onclick = closeModal;
+        $("#modal-close").onclick = closeModal;
+        if (canIdentify)
+          $("#identify-button").onclick = () => openIdentification(caseIndex);
+      }
+      function openIdentification(caseIndex) {
+        activePuzzle = { caseIndex, identification: true };
+        openModal(
+          `${modalHeader("CONCLUSÃO DO CASO", "Quem está no arquivo?", "Use as evidências reunidas para escrever o nome da mulher cuja trajetória você reconstruiu.")}<div class="puzzle-area"><h3>Identificação final</h3><input class="input-answer" id="identity-answer" type="text" autocomplete="off" placeholder="Digite o nome completo"><button class="primary" id="identity-submit" type="button">Confirmar identificação</button><div class="puzzle-message" id="identity-message" aria-live="polite"></div></div><div class="hint-box visible">Dica: consulte os títulos e as conexões no quadro de investigação.</div>`,
+        );
+        $("#modal-close").onclick = closeModal;
+        $("#identity-submit").onclick = checkIdentity;
+        $("#identity-answer").addEventListener("keydown", (event) => {
+          if (event.key === "Enter") checkIdentity();
+        });
+        $("#identity-answer").focus();
+      }
+      function checkIdentity() {
+        const p = activePuzzle,
+          c = cases[p.caseIndex],
+          value = normalize($("#identity-answer").value);
+        if (
+          value === normalize(c.name) ||
+          value === normalize(c.name.split(" ").slice(0, 2).join(" "))
+        ) {
+          state.completed[p.caseIndex] = true;
+          save();
+          closeModal();
+          showBiography(p.caseIndex);
+          playTone(600, 0.16);
+          setTimeout(() => playTone(800, 0.24), 160);
+        } else {
+          $("#identity-message").textContent =
+            "O nome não corresponde às evidências. Releia os documentos e tente novamente.";
+          $("#identity-message").classList.add("error");
+          playTone(160, 0.15, "triangle");
+        }
+      }
+      function showBiography(index) {
+        const c = cases[index];
+        $("#bio-content").innerHTML =
+          `<div class="eyebrow">ARQUIVO RECUPERADO · CASO ${c.number}</div><h2>${escapeHTML(c.name)} <span style="color:var(--gold);font-size:.65em">(${escapeHTML(c.years)})</span></h2><p>${escapeHTML(c.bio)}</p><div class="bio-facts">${c.facts.map((f) => `<span class="fact-tag">${escapeHTML(f)}</span>`).join("")}</div><div class="sources"><strong>Para saber mais:</strong><br>${c.source}<br><small>Os documentos vistos durante o jogo são reconstruções didáticas, não fontes primárias.</small></div><div class="modal-actions"><button class="primary" id="bio-continue" type="button">${index === 2 ? "Voltar ao escritório" : "Voltar ao escritório"}</button></div>`;
+        showScreen("bio");
+        $("#bio-continue").onclick = () => {
+          showScreen("office");
+          renderOffice();
+          if (state.completed.every(Boolean)) {
+            showToast("As três fotografias foram identificadas.");
+          } else if (!state.completed[index + 1])
+            showToast("A próxima investigação foi liberada.");
+        };
+      }
+
+      function showLetter() {
+        openModal(
+          `${modalHeader("A ENCOMENDA", "Carta ao detetive", "O papel envelhecido guarda a missão que trouxe você até este arquivo.")}<div class="document-sheet"><span class="doc-stamp">CARTA RECONSTRUÍDA</span><p style="margin-top:15px">Prezado detetive,<br><br>A história não desaparece apenas quando seus documentos são destruídos. Ela também pode ser esquecida quando deixamos de contar quem a construiu.<br><br>Três mulheres. Três histórias. Três vozes que precisam ser lembradas.<br><br>Sua missão é descobrir quem foram, o que fizeram e por que seus nomes devem permanecer na memória do Brasil.<br><br>O tempo pode apagar as palavras de um papel, mas não precisa apagar uma história.<br><br><em>Nem todo mistério envolve um crime. Alguns envolvem o esquecimento.</em></p></div><div class="modal-actions"><button class="primary" id="letter-close" type="button">Fechar carta</button></div>`,
+        );
+        $("#letter-close").onclick = closeModal;
+        $("#modal-close").onclick = closeModal;
+      }
+      function openCredits() {
+        previousScreen = currentScreen;
+        showScreen("credits");
+      }
+      function exitGame() {
+        showToast(
+          "Você pode fechar esta aba para sair. Seu progresso fica salvo neste navegador.",
+        );
+      }
+      function newGame() {
+        state = defaultState();
+        save();
+        $("#sound-toggle").textContent = "Som: ligado";
+        startIntro();
+      }
+
+      $("#play-button").addEventListener("click", newGame);
+      $("#continue-button").addEventListener("click", () => {
+        if (!state.introSeen) startIntro();
+        else {
+          showScreen("office");
+          renderOffice();
+        }
+      });
+      $("#credits-button").addEventListener("click", openCredits);
+      $("#exit-button").addEventListener("click", exitGame);
+      $("#sound-toggle").addEventListener("click", setSound);
+      $("#home-button").addEventListener("click", goHome);
+      $("#movie-next").addEventListener("click", advanceIntro);
+      $("#movie-skip").addEventListener("click", finishIntro);
+      $("#back-office").addEventListener("click", () => {
+        showScreen("office");
+        renderOffice();
+      });
+      $("#clue-history-button").addEventListener("click", showClueHistory);
+      $("#letter-button").addEventListener("click", showLetter);
+      $("#paper-hotspot").addEventListener("click", showLetter);
+      $("#photo-hotspot").addEventListener("click", () => openBoard(true));
+      $("#lamp-hotspot").addEventListener("click", () =>
+        showToast(
+          "A luz do abajur ilumina os arquivos. Clique nas fichas para investigar.",
+        ),
+      );
+      $("#office-board-button").addEventListener("click", () =>
+        openBoard(true),
+      );
+      $("#recovered-finale").addEventListener("click", () =>
+        showScreen("ending"),
+      );
+      $("#case-board-button").addEventListener("click", () => openBoard(false));
+      $("#ending-credits").addEventListener("click", openCredits);
+      $("#ending-office").addEventListener("click", () => {
+        showScreen("office");
+        renderOffice();
+      });
+      $("#credits-back").addEventListener("click", () => {
+        showScreen(previousScreen === "credits" ? "menu" : previousScreen);
+        if (previousScreen === "office") renderOffice();
+      });
+      $("#credits-home").addEventListener("click", goHome);
+      $("#modal-close").addEventListener("click", closeModal);
+      $("#modal-backdrop").addEventListener("click", (event) => {
+        if (event.target.id === "modal-backdrop") closeModal();
+      });
+      document.addEventListener("keydown", (event) => {
+        if (
+          event.key === "Escape" &&
+          $("#modal-backdrop").classList.contains("open")
+        )
+          closeModal();
+      });
+      $("#sound-toggle").textContent =
+        "Som: " + (state.sound ? "ligado" : "desligado");
+      updateMenu();
+      if (state.started && state.introSeen) {
+        showScreen("menu");
+      }
+    </script>
+  </body>
+</html>
